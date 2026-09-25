@@ -32,7 +32,8 @@ class ApertureApplication : Application() {
 
         // Set backward compatible camera ids
         CameraCompatibilityFilter.setBackwardCompatibleCameraIds(
-            overlaysRepository.backwardCompatibleCameraIds.asList()
+            (overlaysRepository.backwardCompatibleCameraIds + listOf("20", "21", "22"))
+                .distinct()
         )
     }
 }
