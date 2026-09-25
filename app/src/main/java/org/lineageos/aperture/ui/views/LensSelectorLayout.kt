@@ -53,6 +53,7 @@ class LensSelectorLayout @JvmOverloads constructor(
         buttonToZoomRatio.clear()
 
         usesLogicalZoomRatio = activeCamera.logicalZoomRatios.size > 1
+                && availableCameras.size <= 1
 
         if (usesLogicalZoomRatio) {
             for ((approximateZoomRatio, exactZoomRatio) in activeCamera.logicalZoomRatios) {
