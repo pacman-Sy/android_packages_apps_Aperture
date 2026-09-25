@@ -33,6 +33,7 @@ class LensSelectorLayout @JvmOverloads constructor(
     private var currentZoomRatio = 1.0f
 
     private val buttonToApproximateZoomRatio = mutableMapOf<Button, Float>()
+    private val buttonToCameraLabel = mutableMapOf<Button, String>()
 
     private val buttonToCamera = mutableMapOf<Button, Camera>()
     private val buttonToZoomRatio = mutableMapOf<Button, Float>()
@@ -48,6 +49,7 @@ class LensSelectorLayout @JvmOverloads constructor(
 
         removeAllViews()
         buttonToApproximateZoomRatio.clear()
+        buttonToCameraLabel.clear()
 
         buttonToCamera.clear()
         buttonToZoomRatio.clear()
@@ -74,6 +76,7 @@ class LensSelectorLayout @JvmOverloads constructor(
             }
         } else {
             for (camera in availableCameras.sortedBy { it.intrinsicZoomRatio }) {
+                val label = "Lens ${camera.cameraId}"
                 val button = inflateButton().apply {
                     setOnClickListener {
                         if (!isSelected) {
@@ -82,11 +85,12 @@ class LensSelectorLayout @JvmOverloads constructor(
                             onResetZoomRatioCallback()
                         }
                     }
-                    text = formatZoomRatio(camera.intrinsicZoomRatio)
+                    text = label
                 }
 
                 addView(button)
                 buttonToCamera[button] = camera
+                buttonToCameraLabel[button] = label
                 buttonToApproximateZoomRatio[button] = camera.intrinsicZoomRatio
             }
         }
@@ -156,9 +160,10 @@ class LensSelectorLayout @JvmOverloads constructor(
     @Suppress("SetTextI18n")
     private fun updateButtonAttributes(button: Button, currentCamera: Boolean) {
         button.isSelected = currentCamera
-        val formattedZoomRatio = formatZoomRatio(buttonToApproximateZoomRatio[button]!!)
+        val formattedZoomRatio = buttonToCameraLabel[button]
+            ?: formatZoomRatio(buttonToApproximateZoomRatio[button]!!)
         button.text = if (currentCamera) {
-            "${formattedZoomRatio}×"
+            "$formattedZoomRatio"
         } else {
             formattedZoomRatio
         }
