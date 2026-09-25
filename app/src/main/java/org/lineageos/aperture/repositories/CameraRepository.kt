@@ -57,7 +57,6 @@ class CameraRepository(
         cameraProvider.availableCameraInfos
             .filter { cameraXCameraInfo ->
                 cameraXCameraInfo.lensFacing != CameraSelector.LENS_FACING_EXTERNAL
-                        && cameraXCameraInfo.isInternalCameraAllowed()
             }
             .mapToCamera()
     }
@@ -112,26 +111,6 @@ class CameraRepository(
         camera.cameraSelector, mode
     )
 
-    private fun CameraInfo.isInternalCameraAllowed(): Boolean {
-        val camera2CameraInfo = Camera2CameraInfo.from(this)
-
-        return when (camera2CameraInfo.cameraId) {
-            in mainCameraIds -> true
-
-            else -> {
-                val isIgnoredAuxCamera = overlaysRepository.ignoredAuxCameraIds.contains(
-                    camera2CameraInfo.cameraId
-                )
-                val isIgnoredLogicalCamera = overlaysRepository.ignoreLogicalAuxCameras
-                        && physicalCameraInfos.size > 1
-
-                overlaysRepository.enableAuxCameras
-                        && !isIgnoredAuxCamera
-                        && !isIgnoredLogicalCamera
-            }
-        }
-    }
-
     private fun List<CameraInfo>.mapToCamera() = map { it.toCamera() }.sortedBy { it.cameraId }
 
     private fun CameraInfo.toCamera() = Camera.fromCameraX(
@@ -143,14 +122,4 @@ class CameraRepository(
     private fun requireCameraPermission() = require(
         context.permissionGranted(Manifest.permission.CAMERA)
     ) { "Camera permission not granted" }
-
-    companion object {
-        /**
-         * List of main camera IDs. These should never be excluded.
-         */
-        private val mainCameraIds = setOf(
-            "0",
-            "1",
-        )
-    }
 }
