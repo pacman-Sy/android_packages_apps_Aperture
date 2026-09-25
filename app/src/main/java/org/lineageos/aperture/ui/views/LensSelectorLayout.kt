@@ -76,7 +76,13 @@ class LensSelectorLayout @JvmOverloads constructor(
             }
         } else {
             for (camera in availableCameras.sortedBy { it.intrinsicZoomRatio }) {
-                val label = "Lens ${camera.cameraId}"
+                val label = when (camera.cameraId) {
+                    "0" -> "Main"
+                    "20" -> "Depth"
+                    "21" -> "Wide"
+                    "22" -> "Macro"
+                    else -> "Lens ${camera.cameraId}"
+                }
                 val button = inflateButton().apply {
                     setOnClickListener {
                         if (!isSelected) {
