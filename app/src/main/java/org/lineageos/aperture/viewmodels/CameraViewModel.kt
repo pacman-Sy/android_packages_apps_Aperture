@@ -265,7 +265,9 @@ class CameraViewModel(application: Application) : ApertureViewModel(application)
         cameraMode,
     ) { cameras, camera, cameraMode ->
         camera to cameras.filter {
-            it.cameraFacing == camera.cameraFacing && it.supportsCameraMode(cameraMode)
+            (it.cameraFacing == camera.cameraFacing
+                    || it.cameraFacing == org.lineageos.aperture.models.CameraFacing.UNKNOWN)
+                    && it.supportsCameraMode(cameraMode)
         }
     }
         .flowOn(Dispatchers.IO)
